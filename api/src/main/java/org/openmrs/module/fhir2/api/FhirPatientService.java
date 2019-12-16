@@ -9,6 +9,8 @@
  */
 package org.openmrs.module.fhir2.api;
 
+import java.util.Collection;
+
 import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Patient;
 import org.openmrs.PatientIdentifierType;
@@ -19,4 +21,9 @@ public interface FhirPatientService {
 	
 	PatientIdentifierType getPatientIdentifierTypeByIdentifier(Identifier identifier);
 	
+	Collection<Patient> findPatientByName(String name);
+	
+	Collection<Patient> findPatientByGivenName(String given);
+	
+	Collection<Patient> findPatientByFamilyName(String family);
 }
