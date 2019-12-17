@@ -17,10 +17,12 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.openmrs.Person;
+import org.openmrs.PersonAttribute;
+import org.openmrs.PersonAttributeType;
 import org.openmrs.PersonName;
-import org.openmrs.module.fhir2.api.translators.AddressTranslator;
 import org.openmrs.module.fhir2.api.translators.GenderTranslator;
 import org.openmrs.module.fhir2.api.translators.PersonNameTranslator;
+import org.openmrs.module.fhir2.api.translators.TelecomTranslator;
 
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.empty;
@@ -30,6 +32,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.argThat;
@@ -44,9 +47,13 @@ public class PersonTranslatorImplTest {
 
 	private static final String PERSON_GIVEN_NAME = "cornelious";
 
-	private static final String ADDRESS_UUID = "135791-xxxxxx-135791";
+	private static final String CONTACT_VALUE = "0712893493";
 
-	private static final String ADDRESS_CITY = "Eldoret";
+	private static final String PERSON_ATTRIBUTE_CONTACT_UUID = "1232-3434-3434-sd45";
+
+	private static final String PERSON_ATTRIBUTE_TYPE_VALUE = "contact";
+
+	private static final int PERSON_ATTRIBUTE_TYPE_ID = 8;
 
 	@Mock
 	private GenderTranslator genderTranslator;
@@ -55,7 +62,7 @@ public class PersonTranslatorImplTest {
 	private PersonNameTranslator nameTranslator;
 
 	@Mock
-	private AddressTranslator addressTranslator;
+	private TelecomTranslator telecomTranslator;
 
 	private PersonTranslatorImpl personTranslator;
 
@@ -67,6 +74,7 @@ public class PersonTranslatorImplTest {
 		personTranslator = new PersonTranslatorImpl();
 		personTranslator.setGenderTranslator(genderTranslator);
 		personTranslator.setNameTranslator(nameTranslator);
+		personTranslator.setTelecomTranslator(telecomTranslator);
 	}
 
 	@Test
@@ -143,6 +151,23 @@ public class PersonTranslatorImplTest {
 		org.hl7.fhir.r4.model.Person result = personTranslator.toFhirResource(person);
 		assertNotNull(result);
 		assertNotNull(result.getLink());
+	}
+
+	@Test
+	public void shouldTranslateContactPersonAttributeToFhirTelecomType() {
+		PersonAttribute personAttribute = new PersonAttribute();
+		personAttribute.setUuid(PERSON_ATTRIBUTE_CONTACT_UUID);
+		personAttribute.setValue(CONTACT_VALUE);
+		PersonAttributeType attributeType  = new PersonAttributeType();
+		attributeType.setId(PERSON_ATTRIBUTE_TYPE_ID);
+		attributeType.setName(PERSON_ATTRIBUTE_TYPE_VALUE);
+		personAttribute.setAttributeType(attributeType);
+		person.addAttribute(personAttribute);
+		assertNotNull(person);
+		org.hl7.fhir.r4.model.Person result = personTranslator.toFhirResource(person);
+		assertNotNull(result);
+		assertNotNull(result.getTelecom());
+		assertFalse(result.getTelecom().isEmpty());
 	}
 
 }

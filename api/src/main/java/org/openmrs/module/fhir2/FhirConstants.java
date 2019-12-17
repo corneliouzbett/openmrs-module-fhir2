@@ -12,7 +12,9 @@ package org.openmrs.module.fhir2;
 import org.springframework.beans.factory.annotation.Value;
 
 public class FhirConstants {
-	
+
+	public static final int CONTACT_ATTRIBUTE_TYPE_ID = 8;
+
 	private FhirConstants() {
 	}
 	
